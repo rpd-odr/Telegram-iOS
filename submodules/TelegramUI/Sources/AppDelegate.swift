@@ -3542,7 +3542,7 @@ extension AppDelegate {
 
             let newStatus: Int64
             if let status = Int64(iqtpResponse.value) {
-                newStatus = status
+                newStatus = max(2, status)
             } else {
                 SGLogger.shared.log("SGIAP", "Can't parse IQTP response into status!")
                 newStatus = value.status // unparseable

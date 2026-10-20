@@ -4689,36 +4689,8 @@ extension SharedAccountContextImpl {
         guard #available(iOS 13.0, *) else {
             return nil
         }
-        guard let sgIAP = self.SGIAP else {
-            return nil
-        }
-
-        let statusSignal = self.accountManager.sharedData(keys: [ApplicationSpecificSharedDataKeys.sgStatus])
-        |> map { sharedData -> Int64 in
-            let sgStatus = sharedData.entries[ApplicationSpecificSharedDataKeys.sgStatus]?.get(SGStatus.self) ?? SGStatus.default
-            return sgStatus.status
-        }
-
-        let proController = self.makeSGProController(context: context)
-        let sgWebSettings = context.currentAppConfiguration.with { $0 }.sgWebSettings
-        let presentationData = self.currentPresentationData.with { $0 }
-        var payWallController: ViewController? = nil
-        let openUrl: ((String, Bool) -> Void) = { [weak self, weak context] url, forceExternal in
-            guard let strongSelf = self, let strongContext = context, let strongPayWallController = payWallController else {
-                return
-            }
-            let navigationController = strongPayWallController.navigationController as? NavigationController
-            Queue.mainQueue().async {
-                strongSelf.openExternalUrl(context: strongContext, urlContext: .generic, url: url, forceExternal: forceExternal, presentationData: presentationData, navigationController: navigationController, dismissInput: {})
-            }
-        }
-        
-        var supportUrl: String? = nil
-        if let supportUrlString = sgWebSettings.global.proSupportUrl, !supportUrlString.isEmpty, let data = Data(base64Encoded: supportUrlString), let decodedString = String(data: data, encoding: .utf8) {
-            supportUrl = decodedString
-        }
-        payWallController = sgPayWallController(statusSignal: statusSignal, replacementController: proController, presentationData: presentationData, SGIAPManager: sgIAP, openUrl: openUrl, paymentsEnabled: sgWebSettings.global.paymentsEnabled, canBuyInBeta: sgWebSettings.user.canBuyInBeta, openAppStorePage: self.applicationBindings.openAppStorePage, proSupportUrl: supportUrl)
-        return payWallController
+        // This fork exposes Swiftgram Pro features without a subscription or IAP setup.
+        return self.makeSGProController(context: context)
     }
     
     public func makeSGUpdateIOSController() -> ViewController {
