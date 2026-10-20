@@ -4686,6 +4686,9 @@ extension SharedAccountContextImpl {
     }
 
     public func makeSGPayWallController(context: AccountContext) -> ViewController? {
+        guard #available(iOS 13.0, *) else {
+            return nil
+        }
         // This fork exposes Swiftgram Pro features without a subscription or IAP setup.
         return self.makeSGProController(context: context)
     }
