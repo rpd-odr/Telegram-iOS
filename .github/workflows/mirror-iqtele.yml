@@ -1,0 +1,42 @@
+name: Mirror iQTele packages
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 */6 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: iqtele-mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Telegram client
+        run: python -m pip install "Telethon==1.42.0"
+
+      - name: Mirror new iQTele packages
+        env:
+          TELEGRAM_API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          TELEGRAM_API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+          TELEGRAM_SESSION: ${{ secrets.TELEGRAM_SESSION }}
+          IQTELE_CHANNEL: iQTweakiPA
+          IQTELE_SCAN_LIMIT: "150"
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ -z "$TELEGRAM_API_ID" || -z "$TELEGRAM_API_HASH" || -z "$TELEGRAM_SESSION" ]]; then
+            echo "::error::Configure TELEGRAM_API_ID, TELEGRAM_API_HASH and TELEGRAM_SESSION in repository Actions secrets."
+            exit 1
+          fi
+          python .github/scripts/mirror_iqtele.py
