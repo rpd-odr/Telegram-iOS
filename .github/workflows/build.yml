@@ -3,6 +3,9 @@ name: CI
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - '.github/scripts/**'
+      - '.github/workflows/mirror-iqtele.yml'
   workflow_dispatch:
 
 jobs:
