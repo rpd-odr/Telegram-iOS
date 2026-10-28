@@ -9,6 +9,7 @@ on:
     paths-ignore:
       - '.github/scripts/**'
       - '.github/workflows/mirror-iqtele.yml'
+      - '.github/workflows/sync-upstream.yml'
   workflow_dispatch:
 
 jobs:
